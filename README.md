@@ -179,7 +179,7 @@ X-API-Key: api-key
 
 **Headers**:
 ```
-X-API-Key: your-secret-api-key-here
+X-API-Key: api-key
 ```
 
 **Query Parameters**:
@@ -217,7 +217,7 @@ X-API-Key: your-secret-api-key-here
 
 **Headers**:
 ```
-X-API-Key: your-secret-api-key-here
+X-API-Key: api-key
 ```
 
 **Response Body**:

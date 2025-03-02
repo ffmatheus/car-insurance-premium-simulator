@@ -26,7 +26,6 @@ RUN poetry config virtualenvs.create false
 
 RUN poetry install --only main
 
-# Copy application code
 COPY src/ ./src/
 COPY migrations/ ./migrations/
 COPY alembic.ini ./alembic.ini
