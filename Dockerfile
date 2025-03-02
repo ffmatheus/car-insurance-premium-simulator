@@ -2,7 +2,6 @@ FROM python:3.10-slim as base
 
 WORKDIR /app
 
-# Set environment variables
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1 \
@@ -12,20 +11,27 @@ ENV PYTHONFAULTHANDLER=1 \
     PIP_DEFAULT_TIMEOUT=100 \
     POETRY_VERSION=1.6.1
 
-# Install Poetry
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    postgresql-client \
+    libpq-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN pip install "poetry==$POETRY_VERSION"
 
 COPY pyproject.toml poetry.lock* ./
 
-# Configure Poetry to not use virtualenv
 RUN poetry config virtualenvs.create false
 
-# Install dependencies
-FROM base as builder
-RUN poetry install --no-dev
+RUN poetry install --only main
 
-# Copy application code
 COPY src/ ./src/
+COPY migrations/ ./migrations/
+COPY alembic.ini ./alembic.ini
 
-# Run application
-CMD ["uvicorn", "src.presentation.main:app", "--host", "0.0.0.0", "--port", "8000"]
+COPY scripts/wait-for-postgres.sh /wait-for-postgres.sh
+COPY scripts/startup.sh /startup.sh
+RUN chmod +x /wait-for-postgres.sh /startup.sh
+
+CMD ["/startup.sh"]
