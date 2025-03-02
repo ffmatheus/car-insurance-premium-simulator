@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
 from src.config.settings import settings
+from src.presentation.api.routes import premium_routes
 
 
 def create_application() -> FastAPI:
@@ -23,13 +24,11 @@ def create_application() -> FastAPI:
         allow_headers=["*"],
     )
 
+    application.include_router(premium_routes.router)
+
     @application.get("/health", tags=["HEALTH"])
     async def health_check():
         return {"status": "healthy"}
-
-    @application.get("/teste", tags=["TESTE"])
-    async def health_check():
-        return {"teste": "funcionando"}
 
     def custom_openapi():
         if application.openapi_schema:
